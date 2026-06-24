@@ -1,0 +1,46 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: { // Defines object page header for image entity
+                typeName:       'Image',
+                typeNamePlural: 'Images',
+                // Title shown on object page (taken from associated product)
+                title:          { type: #STANDARD,
+                                  value: 'EventName' }
+  }
+}
+annotate entity ZC_IDI_EVENT_IMG with 
+{
+  @UI.facet: [ { id:       'ImageDetails',
+                 // Section on object page for image fields
+                 type:     #IDENTIFICATION_REFERENCE,
+                 label:    'Image Details',
+                 position: 10 } ]
+
+  @UI.lineItem: [ { position: 10,
+                    label: 'Preview' } ] // Shows image preview in the list
+
+  @UI.identification: [ { position: 10,
+                          label: 'Image URL' } ] // Displayed on object page
+  @EndUserText.label: 'Image Link'
+  ImageUrl;
+
+  @UI.lineItem: [ { position: 20,
+                    label:    'Main Image' } ]
+
+  @UI.identification: [ { position: 20,
+                          label:    'Select the main picture' } ]
+
+  @Consumption.filter.selectionType: #SINGLE
+  IsImageMain; // Only one value can be selected in filter
+
+  @UI.hidden: true
+  SortOrder; // Used for sorting images, not relevant for UI
+
+  @UI.hidden: true
+  ImageFile; // Technical fields for file handling, hidden from UI
+  @UI.hidden: true
+  MimeType;
+  @UI.hidden: true
+  FileName;
+    
+}

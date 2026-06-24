@@ -1,0 +1,8 @@
+@EndUserText.label: 'Service Definition'
+define service ZIDI_UI_EVENT {
+  expose ZC_IDI_EVENT          as Event;
+  expose ZC_IDI_EVENT_IMG      as Images;
+  expose ZC_IDI_REQUEST        as Request;
+  expose ZC_IDI_LOCATION       as LocationVH;
+  expose ZC_IDI_EVENT_CATEG_VH as CategoryVH;
+}

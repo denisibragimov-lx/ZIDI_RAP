@@ -1,0 +1,126 @@
+managed implementation in class zbp_t_idi_event unique;
+strict ( 2 );
+
+define behavior for ZT_IDI_EVENT alias Event
+persistent table zidi_event
+lock master
+etag master LastChangedAt
+authorization master ( instance )
+
+{
+  create;
+  update;
+  delete;
+
+  association _Images { create; }
+  association _Request { create; }
+
+
+  field ( numbering : managed, readonly ) EventUuid;  // UUID generated automatically
+  field ( readonly ) EventId; // Business ID generated via determination
+  field ( readonly ) CreatedAt, CreatedBy, LastChangedAt, LocalLastChangedAt, LocalLastChangedBy; // Audit fields (managed by framework)
+  field ( readonly ) AvailabilityText; // Derived fields (calculated in CDS / logic)
+
+//  validation checkMainImageExists on save { create; update; } // Ensures product has one main image
+//  validation checkMandatoryFields on save { create; update; } // Ensures required business fields are filled
+//  determination setEventDefaults on save { create; } // Sets default values (e.g. currency)
+//  determination setMainImage on modify { create; update; } // Synchronizes main image URL from images
+//  determination setEventId on save { create; } // Generates sequential product ID
+//  determination changeBookedQuan on save { create; update; } // Updates Booked quantity
+
+    mapping for zidi_event
+    {
+      EventUuid          = event_uuid;
+      EventId            = event_id;
+      EventName          = event_name;
+      Description        = description;
+      CategoryId         = category_id;
+      LocationId         = location_id;
+      Price              = price;
+      CurrencyCode       = currencycode;
+      EventDate          = event_date;
+      BookedQuantity     = booked_quantity;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
+// Custom action to create order request from product
+//  action ( features : instance ) CreateOrder parameter za_vta_request result [1] $self;
+}
+
+define behavior for ZT_IDI_EVENT_IMG alias EventImage
+persistent table zidi_event_img
+lock dependent by _Event
+authorization dependent by _Event
+//etag master <field_name>
+{
+  update;
+  delete;
+
+//  determination syncType on modify { field IsImageMain; create; update; } // Synchronizes image type (MAIN / DETAIL)
+//  determination setDefaults on modify { create; } // Sets default sort order
+//  validation validateImage on save { field ImageUrl, ImageType; create; update; } // Validates URL and ensures only one main image
+
+  field ( readonly ) EventUuid, EventId;
+  field ( numbering : managed, readonly ) ImageUuid;
+  field ( readonly ) CreatedAt, CreatedBy, LastChangedAt, LocalLastChangedAt, LocalLastChangedBy;
+  field ( mandatory : create ) ImageUrl; // Required field when creating image
+
+  association _Event;
+
+
+  mapping for zidi_event_img
+    {
+      ImageUuid          = image_uuid;
+      EventUuid          = event_uuid;
+      ImageUrl           = image_url;
+      ImageFile          = image_file;
+      MimeType           = mime_type;
+      FileName           = file_name;
+      SortOrder          = sort_order;
+      IsImageMain        = is_image_main;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
+}
+
+define behavior for ZT_IDI_REQUEST alias TicketRequest
+persistent table zidi_request
+lock dependent by _Event
+authorization dependent by _Event
+//etag master <field_name>
+{
+  update;
+  delete;
+
+  field ( readonly ) EventUuid, EventId;
+  field ( numbering : managed, readonly ) RequestUuid;
+  field ( readonly ) CreatedAt, CreatedBy, LastChangedAt, LocalLastChangedAt, LocalLastChangedBy;
+  field ( mandatory ) Quantity, CustomerName, PhoneNumber; // Mandatory input fields for request creation
+
+//  validation check_empty_field on save { field EventDate, Quantity, CustomerName, PhoneNumber; create; update; } // Checks mandatory fields
+//  validation validate_date on save { field EventDate, PhoneNumber; create; update; } // Validates delivery date and phone format
+
+  association _Event;
+
+   mapping for zidi_request
+    {
+      RequestUuid           = request_uuid;
+      EventUuid             = event_uuid;
+      EventId               = event_id;
+      Quantity              = quantity;
+      CustomerName          = customer_name;
+      PhoneNumber           = phone_number;
+      Status                = status;
+      CreatedBy             = created_by;
+      CreatedAt             = created_at;
+      LocalLastChangedBy    = local_last_changed_by;
+      LocalLastChangedAt    = local_last_changed_at;
+      LastChangedAt         = last_changed_at;
+    }
+}

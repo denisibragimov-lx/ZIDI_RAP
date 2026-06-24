@@ -1,0 +1,28 @@
+projection;
+//strict ( 2 );
+
+define behavior for ZC_IDI_EVENT alias Event
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _Images { create; }
+  use association _Request { create; }
+}
+
+define behavior for ZC_IDI_EVENT_IMG alias Images
+{
+  use update;
+  use delete;
+
+  use association _Event;
+}
+
+define behavior for ZC_IDI_REQUEST alias Request
+{
+  use update;
+  use delete;
+
+  use association _Event;
+}

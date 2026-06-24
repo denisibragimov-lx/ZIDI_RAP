@@ -1,0 +1,108 @@
+@Metadata.layer: #CORE
+
+@UI: {
+  headerInfo: {
+    // Defines object page header: title, subtitle, and image
+    typeName: 'Event',
+    typeNamePlural: 'Events',
+    // Main title displayed on object page
+    title: { type: #STANDARD, value: 'EventName' },
+    // Secondary text under the title (ID of the product)
+    description: { type: #STANDARD, value: 'EventId' },
+     // Image displayed in the header (main product image)
+    imageUrl: 'MainImageUrl'
+    },
+
+   selectionVariant: [{ qualifier: 'Default',
+                        text:      'Default View' }],
+
+   presentationVariant: [{
+     // Defines how data is displayed in the list (table view)
+     visualizations:    [{ type: #AS_LINEITEM }],
+     // Default sorting of products in the list
+     sortOrder:         [ 
+                          { by: 'EventName', direction: #ASC } ]  // alphabetically
+  }]
+}
+
+annotate entity ZC_IDI_EVENT
+    with 
+{
+    @UI.facet: [ { id:              'GeneralInfo',
+                 // Main section on object page
+                 purpose:         #STANDARD,
+                 type:            #COLLECTION,
+                 label:           'Event Details',
+                 position:        10 },
+               { id:              'FieldGroup',
+                 // Group of fields inside General Info
+                 purpose:         #STANDARD,
+                 type:            #IDENTIFICATION_REFERENCE,
+                 label:           'Main Data',
+                 parentId:        'GeneralInfo',
+                 position:        10 },
+               { id:              'ImagesTab',
+                 // Table with images (association)
+                 purpose:         #STANDARD,
+                 type:            #LINEITEM_REFERENCE,
+                 label:           'Product Galery',
+                 position:        20,
+                 targetElement:   '_Images'} ]
+                 
+   
+  // Adds action button on object page
+  @UI: {  identification: [ { position:   01,
+                              label:      '🛒 Request Ticket',
+                              type:       #FOR_ACTION,
+                              dataAction: 'CreateOrder' } ] }
+
+  @UI.lineItem: [ { position: 5,
+                    label: 'Photo' } ]
+  // Shows product image in the list
+  @EndUserText.label: 'Photo'
+  MainImageUrl;
+  
+  
+  @UI: { hidden: true }
+  // Technical field, not shown to user
+  EventUuid;
+
+  @UI: { hidden: true }
+  EventId;
+
+  @UI: { lineItem:       [ { position: 35, label: 'Description' } ],
+         identification: [ { position: 35, label: 'Description' } ] }
+  // Displayed in both list and object page
+  Description;
+
+  @UI: { lineItem:       [ { position: 30, label: 'Event name' } ],
+         identification: [ { position: 30, label: 'Event name' } ] }
+  EventName;
+
+  @UI: { selectionField: [ { position: 35 } ],
+       identification: [ { position: 60, label: 'Category' } ] }
+  // Field available in filter bar
+  CategoryId;
+
+  @UI: { lineItem: [ { position: 40, label: 'Category name' } ] }
+  CategoryName;
+  
+  @UI: { identification: [ { position: 90, label: 'Date' } ] }
+  EventDate;
+  
+  
+  @UI: { identification: [ { position: 60, label: 'Availability' } ] }  
+  AvailabilityText;
+  
+  @UI: { lineItem:       [ { position: 70, label: 'Price', importance: #HIGH } ],
+         identification: [ { position: 70, label: 'Price' } ],
+         selectionField: [ { position: 70 } ] }
+  Price;
+  @UI.hidden: true
+  @UI.selectionField: [ { position: 80 } ]
+  // Hidden but used for currency formatting
+  CurrencyCode;
+   
+
+    
+}
